@@ -1,0 +1,43 @@
+switch to root using
+sudo su
+or use sudo for all the following steps.
+
+create a service script (in this example the name of the service is Mongodb)
+
+nano /lib/systemd/system/mongodb.service
+File content should be
+
+[Unit]
+Description=MongoDB Database Service
+Wants=network.target
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+User=mongodb
+Group=mongodb
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
+You can also download the file from here: mongodb.service 
+Here is a quick description of the important fields:
+ExecStart - Is the command to run. Mongo installs itself under /usr/bin and the configuration file is written at /etc
+User - The uid of the mongod process.
+Group - The gid of the mongod process. Note that the user and group are created by the installation.
+
+Now to start mongodb:
+
+sudo systemctl start mongodb
+To stop mongodb service use:
+
+sudo systemctl stop mongodb
+To enable mongodb on startup
+
+sudo systemctl enable mongodb.service
+If you need to refresh the services use:
+
+ sudo systemctl daemon-reload
